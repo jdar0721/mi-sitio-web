@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Isaac Asimov - Breve Historia de la Química (Versión Extendida)</title>
+    <title>Isaac Asimov - Breve Historia de la Química</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700;900&family=Plus+Jakarta+Sans:wght@300;400;600;700&display=swap" rel="stylesheet">
@@ -240,23 +240,26 @@
             line-height: 1.1;
             margin-bottom: 1rem;
             background: linear-gradient(135deg, #ffffff 0%, var(--accent-gold) 100%);
-            -webkit-text-fill-color: black;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
             text-shadow: 0 0 30px rgba(229, 184, 105, 0.2);
         }
 
         .cover-desc {
-            font-size: 1.15rem;
+            font-size: 1.1rem;
             color: var(--text-muted);
             line-height: 1.6;
             margin-bottom: 2rem;
         }
 
         .author-badge {
-            font-size: 0.95rem;
-            color: var(--text-main);
-            border-top: 1px solid var(--border-color);
-            padding-top: 1.5rem;
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 1.2rem;
             display: inline-block;
+            backdrop-filter: blur(8px);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
         }
 
         /* Timeline & Metales */
@@ -431,21 +434,28 @@
 
     <div class="presentation-container">
 
-        <!-- DIAPOSITIVA 1: Portada Extendida (Persona 1) -->
+        <!-- DIAPOSITIVA 1: Portada Extendida con Integrantes () -->
         <div class="slide active" id="slide-1">
             <div class="cover-content">
                 <span class="cover-tag">HISTORIA DE LA QUÍMICA</span>
                 <h1 class="cover-title">LA ALQUIMIA Y LA TRANSICIÓN</h1>
-                <p class="cover-desc">Un recorrido desde los talleres artesanales de la antigüedad y los misterios de Alejandría, pasando por la alquimia árabe, hasta la minería, la jatroquímica y la Revolución Científica.</p>
+                <p class="cover-desc">Un recorrido desde los talleres artesanales de la antigüedad y los misterios de Alejandría, pasando por la alquimia árabe, hasta la minería, la Iatroquímica y la Revolución Científica.</p>
+                
                 <div class="author-badge">
-                    Nacimiento práctico: <strong>Alfarería, Metalurgia, Tintes y Medicina</strong> • Basado en <strong>Isaac Asimov</strong>
+                    <p style="margin-bottom: 0.4rem; color: var(--accent-gold); font-family: var(--font-title); letter-spacing: 1.5px; font-size: 0.85rem;">EQUIPO DE EXPOSICIÓN</p>
+                    <p style="color: #ffffff; font-size: 1rem; font-weight: 700; letter-spacing: 0.5px;">
+                        JOSE DAVID ALZATE RUA &bull; VALERIA LOAIZA RAMIREZ &bull; STEFANIA VARGAS MUÑOZ
+                    </p>
+                    <p style="margin-top: 0.6rem; font-size: 0.85rem; color: var(--text-muted);">
+                        Basado en la obra de <strong>Isaac Asimov</strong>
+                    </p>
                 </div>
             </div>
         </div>
 
-        <!-- DIAPOSITIVA 2: Etimología y Filosofía Griega Extendida (Persona 1) -->
+        <!-- DIAPOSITIVA 2: Etimología y Filosofía Griega Extendida () -->
         <div class="slide" id="slide-2">
-            <span class="slide-subtitle">Persona 1 • Origen del Término y Teoría</span>
+            <span class="slide-subtitle"> •Origen del Término y Teoría</span>
             <h2 class="slide-title">Etimología y Raíces Culturales</h2>
             <div class="grid-3">
                 <div class="card">
@@ -465,13 +475,13 @@
                 </div>
             </div>
             <div class="highlight-box">
-                <strong style="color: var(--accent-gold);">La Primisa Filosofal de los Griegos:</strong> Si el agua es <em>fría y húmeda</em> y el fuego es <em>caliente y seco</em>, cambiando sus cualidades se puede transformar una sustancia en otra. Esta idea impulsó la búsqueda de la transmutación del plomo en oro durante más de 1,500 años.
+                <strong style="color: var(--accent-gold);">La Premisa Filosofal de los Griegos:</strong> Si el agua es <em>fría y húmeda</em> y el fuego es <em>caliente y seco</em>, cambiando sus cualidades se puede transformar una sustancia en otra. Esta idea impulsó la búsqueda de la transmutación del plomo en oro durante más de 1,500 años.
             </div>
         </div>
 
-        <!-- DIAPOSITIVA 3: La Cuna Alejandrina y Cripticismo Extendido (Persona 1) -->
+        <!-- DIAPOSITIVA 3: La Cuna Alejandrina y Cripticismo Extendido () -->
         <div class="slide" id="slide-3">
-            <span class="slide-subtitle">Persona 1 • Siglos III a.C. – IV d.C.</span>
+            <span class="slide-subtitle"> • Siglos III a.C. – IV d.C.</span>
             <h2 class="slide-title">La Cuna Alejandrina y el Lenguaje Secreto</h2>
             <div class="grid-2">
                 <div class="card">
@@ -494,9 +504,9 @@
             </div>
         </div>
 
-        <!-- DIAPOSITIVA 4: La Alquimia Árabe (Persona 2) -->
+        <!-- DIAPOSITIVA 4: La Alquimia Árabe () -->
         <div class="slide" id="slide-4">
-            <span class="slide-subtitle">Persona 2 • Edad de Oro Islámica</span>
+            <span class="slide-subtitle"> •Edad de Oro Islámica</span>
             <h2 class="slide-title">Pioneros del Mundo Islámico</h2>
             <div class="grid-3">
                 <div class="card">
@@ -517,9 +527,9 @@
             </div>
         </div>
 
-        <!-- DIAPOSITIVA 5: Metales y Piedra Filosofal (Persona 2) -->
+        <!-- DIAPOSITIVA 5: Metales y Piedra Filosofal () -->
         <div class="slide" id="slide-5">
-            <span class="slide-subtitle">Persona 2 • Simbología Alquímica</span>
+            <span class="slide-subtitle"> •Simbología Alquímica</span>
             <h2 class="slide-title">Los 7 Metales Antiguos y la Piedra Filosofal</h2>
             <div class="grid-4" style="margin-bottom: 1.5rem;">
                 <div class="metal-card"><div class="metal-symbol">☉</div><div class="metal-name">Oro</div><div class="metal-planet">El Sol</div></div>
@@ -536,9 +546,9 @@
             </div>
         </div>
 
-        <!-- DIAPOSITIVA 6: Europa Occidental (Persona 2) -->
+        <!-- DIAPOSITIVA 6: Europa Occidental () -->
         <div class="slide" id="slide-6">
-            <span class="slide-subtitle">Persona 2 • Siglos XII – XIV</span>
+            <span class="slide-subtitle"> •Siglos XII – XIV</span>
             <h2 class="slide-title">Traducciones e Innovación en Europa</h2>
             <div class="grid-2">
                 <div class="card">
@@ -561,9 +571,9 @@
             </div>
         </div>
 
-        <!-- DIAPOSITIVA 7: Ácidos Minerales (Persona 2) -->
+        <!-- DIAPOSITIVA 7: Ácidos Minerales () -->
         <div class="slide" id="slide-7">
-            <span class="slide-subtitle">Persona 2 • Siglo XIV</span>
+            <span class="slide-subtitle"> •Siglo XIV</span>
             <h2 class="slide-title">La Revolución de los Ácidos Minerales</h2>
             <div class="grid-2">
                 <div class="card">
@@ -582,10 +592,10 @@
             </div>
         </div>
 
-        <!-- DIAPOSITIVA 8: Transición - Minería e Jatroquímica (Persona 3) -->
+        <!-- DIAPOSITIVA 8: Transición - Minería e Iatroquímica () -->
         <div class="slide" id="slide-8">
-            <span class="slide-subtitle">Persona 3 • Transición</span>
-            <h2 class="slide-title">Transición: Minería e Jatroquímica</h2>
+            <span class="slide-subtitle"> •Transición</span>
+            <h2 class="slide-title">Transición: Minería e Iatroquímica</h2>
             <div class="grid-2">
                 <div class="card">
                     <div class="card-header">
@@ -604,7 +614,7 @@
                     <div class="card-header">
                         <div class="card-icon">🧪</div>
                         <div>
-                            <div class="card-title">Paracelso y la Jatroquímica</div>
+                            <div class="card-title">Paracelso y la Iatroquímica</div>
                             <span class="tag tag-blue">Medicina Mineral</span>
                         </div>
                     </div>
@@ -618,9 +628,9 @@
             </div>
         </div>
 
-        <!-- DIAPOSITIVA 9: El Nacimiento de la Química Moderna (Persona 3) -->
+        <!-- DIAPOSITIVA 9: El Nacimiento de la Química Moderna () -->
         <div class="slide" id="slide-9">
-            <span class="slide-subtitle">Persona 3 • La Revolución Científica</span>
+            <span class="slide-subtitle"> •La Revolución Científica</span>
             <h2 class="slide-title">El Nacimiento de la Química Moderna</h2>
             <div class="grid-2">
                 <div class="card">
