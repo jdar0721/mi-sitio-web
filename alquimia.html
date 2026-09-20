@@ -1,0 +1,822 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Isaac Asimov - Breve Historia de la Química (Versión Extendida)</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700;900&family=Plus+Jakarta+Sans:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-primary: #0a0c12;
+            --bg-card: rgba(24, 28, 39, 0.75);
+            --bg-card-hover: rgba(34, 39, 54, 0.85);
+            --accent-gold: #e5b869;
+            --accent-amber: #d97706;
+            --accent-blue: #38bdf8;
+            --text-main: #f1f5f9;
+            --text-muted: #94a3b8;
+            --border-color: rgba(229, 184, 105, 0.2);
+            --font-title: 'Cinzel', serif;
+            --font-body: 'Plus Jakarta Sans', sans-serif;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background-color: var(--bg-primary);
+            background-image: 
+                radial-gradient(circle at 20% 20%, rgba(217, 119, 6, 0.08) 0%, transparent 40%),
+                radial-gradient(circle at 80% 80%, rgba(56, 189, 248, 0.06) 0%, transparent 40%);
+            color: var(--text-main);
+            font-family: var(--font-body);
+            height: 100vh;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+        }
+
+        /* Canvas de Estrellas */
+        #starfield {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        /* Encabezado */
+        header {
+            position: relative;
+            z-index: 10;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 2rem;
+            background: rgba(10, 12, 18, 0.85);
+            border-bottom: 1px solid var(--border-color);
+            backdrop-filter: blur(12px);
+        }
+
+        .book-title {
+            font-family: var(--font-title);
+            font-size: 0.95rem;
+            letter-spacing: 2px;
+            color: var(--accent-gold);
+            text-transform: uppercase;
+        }
+
+        .chapter-title {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+        }
+
+        /* Contenedor de Diapositivas */
+        .presentation-container {
+            position: relative;
+            z-index: 10;
+            flex: 1;
+            width: 100%;
+            height: calc(100vh - 130px);
+            overflow: hidden;
+        }
+
+        .slide {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            padding: 2.5rem 4rem;
+            opacity: 0;
+            visibility: hidden;
+            transform: translateX(30px);
+            transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            overflow-y: auto;
+        }
+
+        .slide.active {
+            opacity: 1;
+            visibility: visible;
+            transform: translateX(0);
+        }
+
+        /* Tipografía */
+        .slide-subtitle {
+            font-family: var(--font-title);
+            color: var(--accent-gold);
+            font-size: 1.1rem;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            margin-bottom: 0.5rem;
+            text-shadow: 0 0 10px rgba(229, 184, 105, 0.3);
+        }
+
+        .slide-title {
+            font-family: var(--font-title);
+            font-size: 2.4rem;
+            font-weight: 700;
+            color: #ffffff;
+            margin-bottom: 1.8rem;
+            line-height: 1.2;
+        }
+
+        /* Layouts */
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            align-items: center;
+        }
+
+        .grid-3 {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1.5rem;
+        }
+
+        .grid-4 {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1rem;
+        }
+
+        /* Tarjetas */
+        .card {
+            background-color: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 1.4rem;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(8px);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+        }
+
+        .card:hover {
+            border-color: var(--accent-gold);
+            transform: translateY(-4px);
+            background-color: var(--bg-card-hover);
+            box-shadow: 0 0 25px rgba(229, 184, 105, 0.15);
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 0.8rem;
+        }
+
+        .card-icon {
+            width: 42px;
+            height: 42px;
+            border-radius: 8px;
+            background: rgba(229, 184, 105, 0.1);
+            color: var(--accent-gold);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 1.2rem;
+            border: 1px solid rgba(229, 184, 105, 0.3);
+        }
+
+        .card-title {
+            font-family: var(--font-title);
+            font-size: 1.15rem;
+            color: #ffffff;
+        }
+
+        .card-body {
+            color: var(--text-muted);
+            font-size: 0.92rem;
+            line-height: 1.6;
+        }
+
+        .highlight-box {
+            background: linear-gradient(135deg, rgba(217, 119, 6, 0.2), rgba(229, 184, 105, 0.08));
+            border-left: 4px solid var(--accent-gold);
+            padding: 1.1rem 1.4rem;
+            border-radius: 0 8px 8px 0;
+            margin-top: 1.2rem;
+            backdrop-filter: blur(8px);
+        }
+
+        /* Portada */
+        .cover-content {
+            text-align: center;
+            max-width: 850px;
+            margin: 0 auto;
+        }
+
+        .cover-tag {
+            display: inline-block;
+            padding: 0.4rem 1.2rem;
+            background: rgba(229, 184, 105, 0.1);
+            border: 1px solid rgba(229, 184, 105, 0.3);
+            border-radius: 50px;
+            color: var(--accent-gold);
+            font-family: var(--font-title);
+            font-size: 0.85rem;
+            letter-spacing: 2px;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 0 15px rgba(229, 184, 105, 0.2);
+        }
+
+        .cover-title {
+            font-family: var(--font-title);
+            font-size: 3.6rem;
+            font-weight: 900;
+            line-height: 1.1;
+            margin-bottom: 1rem;
+            background: linear-gradient(135deg, #ffffff 0%, var(--accent-gold) 100%);
+            -webkit-text-fill-color: black;
+            text-shadow: 0 0 30px rgba(229, 184, 105, 0.2);
+        }
+
+        .cover-desc {
+            font-size: 1.15rem;
+            color: var(--text-muted);
+            line-height: 1.6;
+            margin-bottom: 2rem;
+        }
+
+        .author-badge {
+            font-size: 0.95rem;
+            color: var(--text-main);
+            border-top: 1px solid var(--border-color);
+            padding-top: 1.5rem;
+            display: inline-block;
+        }
+
+        /* Timeline & Metales */
+        .timeline {
+            position: relative;
+            display: flex;
+            justify-content: space-between;
+            margin-top: 2rem;
+            padding: 2rem 0;
+        }
+
+        .timeline::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background: var(--border-color);
+            z-index: 1;
+        }
+
+        .timeline-item {
+            position: relative;
+            z-index: 2;
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            padding: 1rem;
+            border-radius: 10px;
+            width: 22%;
+            text-align: center;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(8px);
+        }
+
+        .timeline-item:hover {
+            border-color: var(--accent-gold);
+            transform: translateY(-5px);
+        }
+
+        .timeline-year {
+            font-family: var(--font-title);
+            color: var(--accent-gold);
+            font-weight: bold;
+            font-size: 1.1rem;
+            margin-bottom: 0.3rem;
+        }
+
+        .timeline-desc {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+        }
+
+        .metal-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            padding: 1rem;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .metal-card:hover {
+            border-color: var(--accent-gold);
+            transform: translateY(-3px);
+        }
+
+        .metal-symbol {
+            font-size: 2rem;
+            color: var(--accent-gold);
+            margin-bottom: 0.3rem;
+        }
+
+        .metal-name { font-family: var(--font-title); font-size: 1rem; color: #fff; }
+        .metal-planet { font-size: 0.8rem; color: var(--text-muted); }
+
+        /* Pie de página y Controles */
+        footer {
+            position: relative;
+            z-index: 10;
+            height: 65px;
+            background: rgba(10, 12, 18, 0.85);
+            border-top: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 2rem;
+            backdrop-filter: blur(12px);
+        }
+
+        .slide-counter {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            font-weight: 600;
+        }
+
+        .controls {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+        }
+
+        .btn {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            color: var(--text-main);
+            padding: 0.6rem 1.2rem;
+            border-radius: 8px;
+            cursor: pointer;
+            font-family: var(--font-body);
+            font-size: 0.9rem;
+            font-weight: 600;
+            transition: all 0.2s ease;
+        }
+
+        .btn:hover {
+            background: var(--accent-gold);
+            color: #000;
+            border-color: var(--accent-gold);
+            box-shadow: 0 0 15px rgba(229, 184, 105, 0.4);
+        }
+
+        .btn:disabled {
+            opacity: 0.3;
+            cursor: not-allowed;
+            background: var(--bg-card);
+            color: var(--text-muted);
+            border-color: var(--border-color);
+            box-shadow: none;
+        }
+
+        .progress-bar-container {
+            position: fixed;
+            bottom: 65px;
+            left: 0;
+            width: 100%;
+            height: 3px;
+            background: rgba(255, 255, 255, 0.05);
+            z-index: 10;
+        }
+
+        .progress-bar {
+            height: 100%;
+            background: var(--accent-gold);
+            width: 0%;
+            transition: width 0.3s ease;
+            box-shadow: 0 0 10px var(--accent-gold);
+        }
+
+        .tag {
+            display: inline-block;
+            padding: 0.2rem 0.6rem;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            margin-bottom: 0.5rem;
+        }
+        .tag-blue { background: rgba(56, 189, 248, 0.15); color: var(--accent-blue); }
+        .tag-gold { background: rgba(229, 184, 105, 0.15); color: var(--accent-gold); }
+    </style>
+</head>
+<body>
+
+    <!-- Canvas de Estrellas -->
+    <canvas id="starfield"></canvas>
+
+    <header>
+        <div class="book-title">Isaac Asimov • Breve Historia de la Química</div>
+        <div class="chapter-title">De los Talleres Artesanales a la Ciencia Moderna</div>
+    </header>
+
+    <div class="presentation-container">
+
+        <!-- DIAPOSITIVA 1: Portada Extendida (Persona 1) -->
+        <div class="slide active" id="slide-1">
+            <div class="cover-content">
+                <span class="cover-tag">HISTORIA DE LA QUÍMICA</span>
+                <h1 class="cover-title">LA ALQUIMIA Y LA TRANSICIÓN</h1>
+                <p class="cover-desc">Un recorrido desde los talleres artesanales de la antigüedad y los misterios de Alejandría, pasando por la alquimia árabe, hasta la minería, la jatroquímica y la Revolución Científica.</p>
+                <div class="author-badge">
+                    Nacimiento práctico: <strong>Alfarería, Metalurgia, Tintes y Medicina</strong> • Basado en <strong>Isaac Asimov</strong>
+                </div>
+            </div>
+        </div>
+
+        <!-- DIAPOSITIVA 2: Etimología y Filosofía Griega Extendida (Persona 1) -->
+        <div class="slide" id="slide-2">
+            <span class="slide-subtitle">Persona 1 • Origen del Término y Teoría</span>
+            <h2 class="slide-title">Etimología y Raíces Culturales</h2>
+            <div class="grid-3">
+                <div class="card">
+                    <span class="tag tag-gold">Egipto</span>
+                    <div class="card-title">Khem (Tierra Negra)</div>
+                    <p class="card-body">Hace referencia a la fértil tierra depositada por el Nilo. Los egipcios eran maestros prácticos: extracción metalúrgica, fabricación de vidrio, elaboración de pigmentos y embalsamamiento de momias.</p>
+                </div>
+                <div class="card">
+                    <span class="tag tag-blue">Grecia</span>
+                    <div class="card-title">Khēmeia (Teoría de Elementos)</div>
+                    <p class="card-body">Derivado de <em>khuma</em> (fundición). Aportaron la teoría: Aristóteles sostuvo que la materia tiene 4 elementos (Tierra, Aire, Fuego, Agua) y 4 cualidades (frío, caliente, seco, húmedo).</p>
+                </div>
+                <div class="card">
+                    <span class="tag tag-gold">Mundo Árabe</span>
+                    <div class="card-title">Al-Kīmiyā' (الكيمياء)</div>
+                    <p class="card-body">Al conquistar Egipto en el siglo VII, los árabes adoptaron el término y le añadieron el artículo <em>al-</em>, fijando la palabra que entraría a Europa como <strong>Alquimia</strong>.</p>
+                </div>
+            </div>
+            <div class="highlight-box">
+                <strong style="color: var(--accent-gold);">La Primisa Filosofal de los Griegos:</strong> Si el agua es <em>fría y húmeda</em> y el fuego es <em>caliente y seco</em>, cambiando sus cualidades se puede transformar una sustancia en otra. Esta idea impulsó la búsqueda de la transmutación del plomo en oro durante más de 1,500 años.
+            </div>
+        </div>
+
+        <!-- DIAPOSITIVA 3: La Cuna Alejandrina y Cripticismo Extendido (Persona 1) -->
+        <div class="slide" id="slide-3">
+            <span class="slide-subtitle">Persona 1 • Siglos III a.C. – IV d.C.</span>
+            <h2 class="slide-title">La Cuna Alejandrina y el Lenguaje Secreto</h2>
+            <div class="grid-2">
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-icon">🏛️</div>
+                        <div class="card-title">Pioneros Alejandrinos</div>
+                    </div>
+                    <p class="card-body">En Alejandría se fusionó la técnica práctica egipcia con la filosofía griega. Figuras como <strong>Zósimo de Panópolis</strong> y <strong>Bolos de Mendes</strong> escribieron los primeros tratados detallando recetas para imitar el brillo del oro y la plata en metales comunes.</p>
+                </div>
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-icon">🔥</div>
+                        <div class="card-title">El Edicto de Diocleciano (296 d.C.)</div>
+                    </div>
+                    <p class="card-body">El emperador romano Diocleciano temía que los alquimistas fabricaran oro falso a gran escala, arruinando la economía romana. Por ello, ordenó <strong>buscar y quemar todos los libros</strong> de química y metalurgia del imperio.</p>
+                </div>
+            </div>
+            <div class="highlight-box" style="margin-top: 1rem;">
+                <strong>El Nacimiento del Lenguaje Secreto:</strong> Para evitar la ejecución tras la persecución de Diocleciano, los alquimistas ocultaron su conocimiento en un código alegórico, místico y lleno de símbolos mágicos, aislando la disciplina de la ciencia abierta por más de mil años.
+            </div>
+        </div>
+
+        <!-- DIAPOSITIVA 4: La Alquimia Árabe (Persona 2) -->
+        <div class="slide" id="slide-4">
+            <span class="slide-subtitle">Persona 2 • Edad de Oro Islámica</span>
+            <h2 class="slide-title">Pioneros del Mundo Islámico</h2>
+            <div class="grid-3">
+                <div class="card">
+                    <div class="card-title">Jabir ibn Hayyan (Geber)</div>
+                    <span class="tag tag-gold">c. 721 – 815 d.C.</span>
+                    <p class="card-body">Formuló la teoría de que los metales están compuestos por proporciones variables de <strong>Azufre</strong> (combustibilidad) y <strong>Mercurio</strong> (metalicidad).</p>
+                </div>
+                <div class="card">
+                    <div class="card-title">Al-Razi (Rhazes)</div>
+                    <span class="tag tag-blue">865 – 925 d.C.</span>
+                    <p class="card-body">Clasificó metódicamente sustancias minerales y perfeccionó aparatos fundamentales de laboratorio como el <strong>alambique</strong>.</p>
+                </div>
+                <div class="card">
+                    <div class="card-title">Ibn Sina (Avicena)</div>
+                    <span class="tag tag-gold">980 – 1037 d.C.</span>
+                    <p class="card-body">Célebre médico que dudó abiertamente de la posibilidad real de transmutar metales inferiores en verdadero oro.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- DIAPOSITIVA 5: Metales y Piedra Filosofal (Persona 2) -->
+        <div class="slide" id="slide-5">
+            <span class="slide-subtitle">Persona 2 • Simbología Alquímica</span>
+            <h2 class="slide-title">Los 7 Metales Antiguos y la Piedra Filosofal</h2>
+            <div class="grid-4" style="margin-bottom: 1.5rem;">
+                <div class="metal-card"><div class="metal-symbol">☉</div><div class="metal-name">Oro</div><div class="metal-planet">El Sol</div></div>
+                <div class="metal-card"><div class="metal-symbol">☽</div><div class="metal-name">Plata</div><div class="metal-planet">La Luna</div></div>
+                <div class="metal-card"><div class="metal-symbol">♂</div><div class="metal-name">Hierro</div><div class="metal-planet">Marte</div></div>
+                <div class="metal-card"><div class="metal-symbol">♀</div><div class="metal-name">Cobre</div><div class="metal-planet">Venus</div></div>
+                <div class="metal-card"><div class="metal-symbol">♃</div><div class="metal-name">Estaño</div><div class="metal-planet">Júpiter</div></div>
+                <div class="metal-card"><div class="metal-symbol">♄</div><div class="metal-name">Plomo</div><div class="metal-planet">Saturno</div></div>
+                <div class="metal-card"><div class="metal-symbol">☿</div><div class="metal-name">Mercurio</div><div class="metal-planet">Mercurio</div></div>
+                <div class="metal-card" style="border-color: var(--accent-gold); background: rgba(229,184,105,0.08);"><div class="metal-symbol" style="color: #fff;">✨</div><div class="metal-name">El Elixir</div><div class="metal-planet">Piedra Filosofal</div></div>
+            </div>
+            <div class="highlight-box">
+                <strong>La Piedra Filosofal:</strong> Sustancia mística buscada para transmutar plomo en oro y conceder la salud o inmortalidad (Elixir de la vida).
+            </div>
+        </div>
+
+        <!-- DIAPOSITIVA 6: Europa Occidental (Persona 2) -->
+        <div class="slide" id="slide-6">
+            <span class="slide-subtitle">Persona 2 • Siglos XII – XIV</span>
+            <h2 class="slide-title">Traducciones e Innovación en Europa</h2>
+            <div class="grid-2">
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-icon">📖</div>
+                        <div class="card-title">Escuelas de Traductores</div>
+                    </div>
+                    <p class="card-body">A través de Toledo y Sicilia, los textos árabes fueron traducidos al latín, reintroduciendo la ciencia y la alquimia a la Europa medieval.</p>
+                </div>
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-icon">🔬</div>
+                        <div class="card-title">Alberto Magno y Roger Bacon</div>
+                    </div>
+                    <p class="card-body">
+                        • <strong>Alberto Magno:</strong> Aisló el arsénico en estado elemental.<br>
+                        • <strong>Roger Bacon:</strong> Promovió la experimentación científica y estudió la composición de la pólvora.
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- DIAPOSITIVA 7: Ácidos Minerales (Persona 2) -->
+        <div class="slide" id="slide-7">
+            <span class="slide-subtitle">Persona 2 • Siglo XIV</span>
+            <h2 class="slide-title">La Revolución de los Ácidos Minerales</h2>
+            <div class="grid-2">
+                <div class="card">
+                    <div class="card-title">Descubrimientos del Pseudo-Geber</div>
+                    <p class="card-body" style="margin-top: 0.5rem;">Aparición de los ácidos inorgánicos fuertes:</p>
+                    <ul style="margin-left: 1.2rem; margin-top: 0.5rem; color: var(--text-muted); line-height: 1.8;">
+                        <li><strong>Ácido Nítrico (Aqua Fortis)</strong></li>
+                        <li><strong>Ácido Sulfúrico (Aceite de Vitriolo)</strong></li>
+                        <li><strong>Agua Regia:</strong> Capaz de disolver incluso el oro.</li>
+                    </ul>
+                </div>
+                <div class="card">
+                    <div class="card-title">Avance Técnico</div>
+                    <p class="card-body" style="margin-top: 0.5rem;">Permitió disolver y analizar sustancias a temperatura ambiente sin depender de altas temperaturas de fuego, transformando los procesos de laboratorio.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- DIAPOSITIVA 8: Transición - Minería e Jatroquímica (Persona 3) -->
+        <div class="slide" id="slide-8">
+            <span class="slide-subtitle">Persona 3 • Transición</span>
+            <h2 class="slide-title">Transición: Minería e Jatroquímica</h2>
+            <div class="grid-2">
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-icon">⛏️</div>
+                        <div>
+                            <div class="card-title">Georg Bauer (Agricola)</div>
+                            <span class="tag tag-gold">1494 – 1555</span>
+                        </div>
+                    </div>
+                    <p class="card-body">
+                        En el año de 1556 Georg Bauer publicaría <em>De Re Metallica</em>, donde sintetizaría la minería y la metalurgia real. Bauer demostró que la extracción económica y eficiente de minerales era más provechoso que la búsqueda del oro.
+                    </p>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-icon">🧪</div>
+                        <div>
+                            <div class="card-title">Paracelso y la Jatroquímica</div>
+                            <span class="tag tag-blue">Medicina Mineral</span>
+                        </div>
+                    </div>
+                    <p class="card-body">
+                        Por otro lado, Paracelso crearía la <strong>iatroquímica</strong>, con la cual sostuvo que la verdadera meta de la alquimia no debía ser fabricar oro, sino preparar medicamentos a base de minerales.
+                    </p>
+                </div>
+            </div>
+            <div class="highlight-box">
+                <strong>Cambio de Enfoque:</strong> La química deja atrás la ilusión de la transmutación para centrarse en la producción industrial práctica y la curación de enfermedades.
+            </div>
+        </div>
+
+        <!-- DIAPOSITIVA 9: El Nacimiento de la Química Moderna (Persona 3) -->
+        <div class="slide" id="slide-9">
+            <span class="slide-subtitle">Persona 3 • La Revolución Científica</span>
+            <h2 class="slide-title">El Nacimiento de la Química Moderna</h2>
+            <div class="grid-2">
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-icon">📚</div>
+                        <div>
+                            <div class="card-title">Andreas Libavius</div>
+                            <span class="tag tag-gold">c. 1540 – 1616</span>
+                        </div>
+                    </div>
+                    <p class="card-body">
+                        El paso definitivo hacia la ciencia moderna lo dio Andreas Libavius en 1597 al publicar su obra titulada <em>Alchemia</em>. Este se considera el <strong>primer libro de texto de química</strong> de la historia.
+                    </p>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-icon">🌌</div>
+                        <div>
+                            <div class="card-title">Factores Clave de Cambio</div>
+                            <span class="tag tag-blue">Imprenta y Revolución</span>
+                        </div>
+                    </div>
+                    <p class="card-body">
+                        A todo esto se sumó la invención de la <strong>imprenta de Gutenberg</strong>, que permitió difundir libros masivamente sin errores de copia, y la Revolución Científica impulsada por <strong>Copérnico</strong> y <strong>Vesalio</strong>. Fue así como la alquimia mística desapareció para dar nacimiento a la química científica.
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- DIAPOSITIVA 10: Línea del Tiempo (Cierre) -->
+        <div class="slide" id="slide-10">
+            <span class="slide-subtitle">Resumen General</span>
+            <h2 class="slide-title">Línea del Tiempo de la Transformación</h2>
+            <div class="timeline">
+                <div class="timeline-item">
+                    <div class="timeline-year">300 a.C.</div>
+                    <div class="timeline-desc">Alejandría: Fusión griega y egipcia.</div>
+                </div>
+                <div class="timeline-item">
+                    <div class="timeline-year">c. 800 d.C.</div>
+                    <div class="timeline-desc">Geber y la teoría Azufre-Mercurio.</div>
+                </div>
+                <div class="timeline-item">
+                    <div class="timeline-year">1556-1597</div>
+                    <div class="timeline-desc">Bauer, Paracelso y Libavius sientan las bases.</div>
+                </div>
+                <div class="timeline-item">
+                    <div class="timeline-year">1661 d.C.</div>
+                    <div class="timeline-desc">Boyle y la Química Científica.</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- DIAPOSITIVA 11: Legado (Cierre) -->
+        <div class="slide" id="slide-11">
+            <span class="slide-subtitle">Conclusión</span>
+            <h2 class="slide-title">El Legado Permanente</h2>
+            <div class="grid-2">
+                <div class="card">
+                    <div class="card-title" style="color: #ef4444;">Lo que se descartó</div>
+                    <p class="card-body" style="margin-top: 0.5rem;">
+                        • Misticismo, secreto y simbolismo oscuro.<br>
+                        • Búsqueda ilusa de la transmutación del oro.<br>
+                        • Teorías cualitativas sin medición exacta.
+                    </p>
+                </div>
+                <div class="card">
+                    <div class="card-title" style="color: #22c55e;">Lo que heredó la Ciencia</div>
+                    <p class="card-body" style="margin-top: 0.5rem;">
+                        • Instrumental de laboratorio y técnicas de destilación.<br>
+                        • Descubrimiento de ácidos, minerales y medicamentos.<br>
+                        • El método experimental sistemático.
+                    </p>
+                </div>
+            </div>
+            <div class="highlight-box" style="margin-top: 1.5rem; text-align: center;">
+                <em>"Los alquimistas construyeron el laboratorio sobre el cual se edificaría la química moderna."</em> — Isaac Asimov
+            </div>
+        </div>
+
+    </div>
+
+    <div class="progress-bar-container">
+        <div class="progress-bar" id="progress"></div>
+    </div>
+
+    <footer>
+        <div class="slide-counter">Diapositiva <span id="current-slide">1</span> de <span id="total-slides">11</span></div>
+        <div class="controls">
+            <button class="btn" id="prev-btn" onclick="changeSlide(-1)">← Anterior</button>
+            <button class="btn" id="next-btn" onclick="changeSlide(1)">Siguiente →</button>
+        </div>
+    </footer>
+
+    <script>
+        /* NAVEGACIÓN DE DIAPOSITIVAS */
+        let currentSlideIndex = 0;
+        const slides = document.querySelectorAll('.slide');
+        const totalSlides = slides.length;
+        const currentSlideEl = document.getElementById('current-slide');
+        const totalSlidesEl = document.getElementById('total-slides');
+        const prevBtn = document.getElementById('prev-btn');
+        const nextBtn = document.getElementById('next-btn');
+        const progressBar = document.getElementById('progress');
+
+        totalSlidesEl.textContent = totalSlides;
+
+        function updateSlide() {
+            slides.forEach((slide, index) => {
+                slide.classList.remove('active');
+                if (index === currentSlideIndex) {
+                    slide.classList.add('active');
+                }
+            });
+
+            currentSlideEl.textContent = currentSlideIndex + 1;
+            prevBtn.disabled = currentSlideIndex === 0;
+            nextBtn.disabled = currentSlideIndex === totalSlides - 1;
+
+            const progressPercentage = ((currentSlideIndex + 1) / totalSlides) * 100;
+            progressBar.style.width = `${progressPercentage}%`;
+        }
+
+        function changeSlide(direction) {
+            currentSlideIndex += direction;
+            if (currentSlideIndex < 0) currentSlideIndex = 0;
+            if (currentSlideIndex >= totalSlides) currentSlideIndex = totalSlides - 1;
+            updateSlide();
+        }
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowRight' || e.key === 'Space') {
+                changeSlide(1);
+            } else if (e.key === 'ArrowLeft') {
+                changeSlide(-1);
+            }
+        });
+
+        updateSlide();
+
+        /* FONDO ANIMADO DE ESTRELLAS */
+        const canvas = document.getElementById('starfield');
+        const ctx = canvas.getContext('2d');
+        let stars = [];
+
+        function resizeCanvas() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+            initStars();
+        }
+
+        function initStars() {
+            stars = [];
+            const numStars = Math.floor((canvas.width * canvas.height) / 2500);
+            for (let i = 0; i < numStars; i++) {
+                stars.push({
+                    x: Math.random() * canvas.width,
+                    y: Math.random() * canvas.height,
+                    radius: Math.random() * 1.5 + 0.3,
+                    alpha: Math.random(),
+                    speed: Math.random() * 0.015 + 0.005,
+                    delta: Math.random() < 0.5 ? 1 : -1,
+                    color: Math.random() < 0.2 ? '#e5b869' : (Math.random() < 0.1 ? '#38bdf8' : '#ffffff')
+                });
+            }
+        }
+
+        function animateStars() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            stars.forEach(star => {
+                star.alpha += star.speed * star.delta;
+                if (star.alpha >= 1) {
+                    star.alpha = 1;
+                    star.delta = -1;
+                } else if (star.alpha <= 0.1) {
+                    star.alpha = 0.1;
+                    star.delta = 1;
+                }
+
+                ctx.beginPath();
+                ctx.arc(star.x, star.y, star.radius, 0, Math.PI * 2);
+                ctx.fillStyle = star.color;
+                ctx.globalAlpha = star.alpha;
+                ctx.shadowBlur = star.radius * 4;
+                ctx.shadowColor = star.color;
+                ctx.fill();
+            });
+
+            requestAnimationFrame(animateStars);
+        }
+
+        window.addEventListener('resize', resizeCanvas);
+        resizeCanvas();
+        animateStars();
+    </script>
+</body>
+</html>
